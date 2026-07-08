@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { useUsers } from '../context/UsersContext'
 
-export function PeoplePage() {
+export function CommunityPage() {
   const { usersDb, loading } = useUsers()
 
   if (loading) return <p className="p-8 text-center text-slate-500">Loading…</p>
@@ -9,7 +9,7 @@ export function PeoplePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-4 py-6">
-      <h1 className="text-xl font-semibold">People</h1>
+      <h1 className="text-xl font-semibold">Community</h1>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {usersDb.users.map((user) => (
           <Link

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { useUserLists } from '../../context/UserListsContext'
 import { uploadImage } from '../../lib/github'
 import { getImageUrl } from '../../lib/db'
 import { getRepoInfo } from '../../lib/repoInfo'
@@ -20,6 +21,7 @@ export interface GameFormValues {
 
 const PLATFORM_OPTIONS = ['PC', 'PS4', 'PS5', 'Switch', 'Switch2', 'XBOX']
 const NEW_CATEGORY_VALUE = '__new__'
+const TITLES_DATALIST_ID = 'game-title-suggestions'
 
 function parsePlatform(platform: string | undefined): { selected: string[]; other: string } {
   if (!platform) return { selected: [], other: '' }
@@ -43,7 +45,8 @@ function parsePlatform(platform: string | undefined): { selected: string[]; othe
 interface GameFormProps {
   categories: Category[]
   initial?: Game
-  onSubmit: (values: GameFormValues) => void
+  existingTitles: string[]
+  onSubmit: (values: GameFormValues, listIds: string[]) => void
   onCancel: () => void
   onCreateCategory?: (name: string) => Promise<Category>
 }
@@ -51,11 +54,13 @@ interface GameFormProps {
 export function GameForm({
   categories,
   initial,
+  existingTitles,
   onSubmit,
   onCancel,
   onCreateCategory,
 }: GameFormProps) {
-  const { token } = useAuth()
+  const { token, currentUser } = useAuth()
+  const { listsDb } = useUserLists()
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
   const [categoryId, setCategoryId] = useState(initial?.categoryId ?? categories[0]?.id ?? '')
@@ -74,6 +79,11 @@ export function GameForm({
   const [newCategoryName, setNewCategoryName] = useState('')
   const [creatingCategoryBusy, setCreatingCategoryBusy] = useState(false)
   const [creatingCategoryError, setCreatingCategoryError] = useState<string | null>(null)
+
+  const myLists = listsDb?.lists.filter((l) => l.ownerId === currentUser?.id) ?? []
+  const [selectedListIds, setSelectedListIds] = useState<string[]>(
+    initial ? myLists.filter((l) => l.gameIds.includes(initial.id)).map((l) => l.id) : [],
+  )
 
   const handleImageChange = async (file: File | undefined) => {
     if (!file || !token) return
@@ -120,25 +130,40 @@ export function GameForm({
     )
   }
 
+  const toggleList = (listId: string) => {
+    setSelectedListIds((prev) =>
+      prev.includes(listId) ? prev.filter((id) => id !== listId) : [...prev, listId],
+    )
+  }
+
+  const trimmedTitle = title.trim()
+  const isDuplicateTitle =
+    trimmedTitle.length > 0 &&
+    trimmedTitle.toLowerCase() !== (initial?.title ?? '').toLowerCase() &&
+    existingTitles.some((t) => t.toLowerCase() === trimmedTitle.toLowerCase())
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !categoryId) return
     const platform = [...selectedPlatforms, ...(otherEnabled && otherPlatform.trim() ? [otherPlatform.trim()] : [])].join(
       ' / ',
     )
-    onSubmit({
-      title: title.trim(),
-      description: description.trim(),
-      categoryId,
-      imagePath,
-      rating,
-      recommended,
-      tags: tagsText
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean),
-      platform,
-    })
+    onSubmit(
+      {
+        title: title.trim(),
+        description: description.trim(),
+        categoryId,
+        imagePath,
+        rating,
+        recommended,
+        tags: tagsText
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean),
+        platform,
+      },
+      selectedListIds,
+    )
   }
 
   const previewUrl = getImageUrl(imagePath)
@@ -149,11 +174,22 @@ export function GameForm({
         <label className="mb-1 block text-xs font-medium text-slate-500">Title</label>
         <input
           autoFocus
+          list={TITLES_DATALIST_ID}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="w-full rounded border border-slate-300 bg-transparent px-3 py-1.5 text-sm dark:border-slate-700"
           required
         />
+        <datalist id={TITLES_DATALIST_ID}>
+          {existingTitles.map((t) => (
+            <option key={t} value={t} />
+          ))}
+        </datalist>
+        {isDuplicateTitle && (
+          <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            A game with this title already exists — check it's not a duplicate.
+          </p>
+        )}
       </div>
 
       <div>
@@ -260,6 +296,27 @@ export function GameForm({
           className="w-full rounded border border-slate-300 bg-transparent px-3 py-1.5 text-sm dark:border-slate-700"
         />
       </div>
+
+      {myLists.length > 0 && (
+        <div>
+          <label className="mb-1 block text-xs font-medium text-slate-500">Add to my lists</label>
+          <div className="flex flex-wrap gap-2">
+            {myLists.map((list) => (
+              <label
+                key={list.id}
+                className="flex items-center gap-1.5 rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-700"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedListIds.includes(list.id)}
+                  onChange={() => toggleList(list.id)}
+                />
+                {list.name}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-4">
         <div>

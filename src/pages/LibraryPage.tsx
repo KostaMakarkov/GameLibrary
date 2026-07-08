@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
 import { useEditMode } from '../context/EditModeContext'
 import { useOptimisticCommit } from '../hooks/useOptimisticCommit'
+import { useListMembership } from '../hooks/useListMembership'
+import { useCreateCategory } from '../hooks/useCreateCategory'
 import { GameCard } from '../components/GameCard'
 import { FiltersBar, type Filters } from '../components/FiltersBar'
-import { FloatingAddButton } from '../components/FloatingAddButton'
 import { Modal } from '../components/Modal'
 import { GameForm, type GameFormValues } from '../components/GameForm'
 import { CategoryManager } from '../components/CategoryManager'
@@ -38,13 +39,14 @@ function sortGames(games: Game[], sort: Filters['sort']): Game[] {
 }
 
 export function LibraryPage() {
-  const { currentUser, canWrite } = useAuth()
+  const { canWrite } = useAuth()
   const { db, loading, error } = useData()
   const { editMode } = useEditMode()
   const { run } = useOptimisticCommit()
+  const { applySelection } = useListMembership()
+  const { createCategory } = useCreateCategory()
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
 
-  const [addingGame, setAddingGame] = useState(false)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
   const [deletingGame, setDeletingGame] = useState<Game | null>(null)
   const [managingCategories, setManagingCategories] = useState(false)
@@ -78,25 +80,7 @@ export function LibraryPage() {
 
   if (!db) return null
 
-  const handleAddGame = (values: GameFormValues) => {
-    const game: Game = {
-      id: crypto.randomUUID(),
-      ...values,
-      createdBy: currentUser?.displayName ?? 'unknown',
-      createdByUserId: currentUser?.id,
-      createdAt: nowIso(),
-      updatedAt: nowIso(),
-    }
-    run(
-      (current) => ({ ...current, games: [...current.games, game] }),
-      `Add game: ${values.title}`,
-      `Added "${values.title}"`,
-      `Failed to add "${values.title}"`,
-    )
-    setAddingGame(false)
-  }
-
-  const handleEditGame = (values: GameFormValues) => {
+  const handleEditGame = (values: GameFormValues, listIds: string[]) => {
     if (!editingGame) return
     const gameId = editingGame.id
     run(
@@ -108,6 +92,7 @@ export function LibraryPage() {
       `Updated "${values.title}"`,
       `Failed to update "${values.title}"`,
     )
+    applySelection(gameId, listIds)
     setEditingGame(null)
   }
 
@@ -124,21 +109,8 @@ export function LibraryPage() {
     setDeletingGame(null)
   }
 
-  // Returns the new category immediately (optimistically) so GameForm can
-  // select it right away, while the real commit runs in the background.
-  const handleCreateCategory = (name: string): Promise<Category> => {
-    const category: Category = { id: crypto.randomUUID(), name, slug: slugify(name) }
-    run(
-      (current) => ({ ...current, categories: [...current.categories, category] }),
-      `Add category: ${name}`,
-      `Added category "${name}"`,
-      `Failed to add category "${name}"`,
-    )
-    return Promise.resolve(category)
-  }
-
   const handleAddCategory = (name: string) => {
-    handleCreateCategory(name)
+    createCategory(name)
   }
 
   const handleEditCategory = (category: Category, name: string) => {
@@ -224,16 +196,15 @@ export function LibraryPage() {
         </div>
       )}
 
-      {canWrite && <FloatingAddButton onClick={() => setAddingGame(true)} />}
-
-      {(addingGame || editingGame) && (
-        <Modal title={editingGame ? 'Edit game' : 'Add game'} onClose={() => (editingGame ? setEditingGame(null) : setAddingGame(false))}>
+      {editingGame && (
+        <Modal title="Edit game" onClose={() => setEditingGame(null)}>
           <GameForm
             categories={db.categories}
-            initial={editingGame ?? undefined}
-            onCreateCategory={handleCreateCategory}
-            onSubmit={editingGame ? handleEditGame : handleAddGame}
-            onCancel={() => (editingGame ? setEditingGame(null) : setAddingGame(false))}
+            initial={editingGame}
+            existingTitles={db.games.filter((g) => g.id !== editingGame.id).map((g) => g.title)}
+            onCreateCategory={createCategory}
+            onSubmit={handleEditGame}
+            onCancel={() => setEditingGame(null)}
           />
         </Modal>
       )}

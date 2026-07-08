@@ -17,8 +17,8 @@ export function GameCard({ game, categoryName, actions }: GameCardProps) {
   const imageUrl = getImageUrl(game.imagePath)
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-      <div className="flex h-36 items-center justify-center bg-slate-100 dark:bg-slate-800">
+    <div className="flex flex-col rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex h-36 items-center justify-center overflow-hidden rounded-t-lg bg-slate-100 dark:bg-slate-800">
         {imageUrl && !imageFailed ? (
           <img
             src={imageUrl}

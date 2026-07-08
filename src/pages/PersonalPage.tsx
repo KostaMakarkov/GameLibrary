@@ -155,7 +155,7 @@ export function PersonalPage() {
         </div>
       )}
 
-      {isOwnPage && (
+      {isOwnPage && tab.kind === 'uploaded' && (
         <div className="flex gap-2">
           <input
             value={newListName}
