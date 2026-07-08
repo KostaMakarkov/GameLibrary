@@ -39,7 +39,7 @@ function sortGames(games: Game[], sort: Filters['sort']): Game[] {
 }
 
 export function LibraryPage() {
-  const { canWrite } = useAuth()
+  const { canWrite, currentUser, isOwner } = useAuth()
   const { db, loading, error } = useData()
   const { editMode } = useEditMode()
   const { run } = useOptimisticCommit()
@@ -139,6 +139,7 @@ export function LibraryPage() {
   const gamesInCategory = (categoryId: string) => db.games.filter((g) => g.categoryId === categoryId).length
 
   const canEdit = canWrite && editMode
+  const canDeleteGame = (game: Game) => isOwner || (!!currentUser && game.createdByUserId === currentUser.id)
 
   const renderGameCard = (game: Game) => (
     <GameCard
@@ -151,9 +152,11 @@ export function LibraryPage() {
             <button onClick={() => setEditingGame(game)} className="underline">
               Edit
             </button>
-            <button onClick={() => setDeletingGame(game)} className="text-red-600 underline">
-              Delete
-            </button>
+            {canDeleteGame(game) && (
+              <button onClick={() => setDeletingGame(game)} className="text-red-600 underline">
+                Delete
+              </button>
+            )}
           </div>
         ) : undefined
       }
