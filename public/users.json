@@ -29,6 +29,16 @@
       "salt": "ZMtOiZZb3h8is5AM7cogOQ==",
       "iv": "qZzi3XeQmqBQUWig",
       "ciphertext": "Djkjm+wpoPApBerdBbi16Ti7vCQagFae/QlJ4+kJYL+Z3f5wFq6oSxjq5+v4Tq/+mus9ReksHU8Di92EwTPY+LewTJpd3tax7YU2h1wqNW15t26uxqNarkb80y/kSxq13LHKOfpJSl2hIswEGw=="
+    },
+    {
+      "id": "1eb9a9ad-50fa-4b11-87e0-8629a5b1f1b7",
+      "username": "Raz.D",
+      "displayName": "Raz",
+      "isOwner": false,
+      "mustChangePin": true,
+      "salt": "WNqZXswo6dV5OL9zbYDAaA==",
+      "iv": "pXAvinCcpSLeuOWT",
+      "ciphertext": "IBCOsO4TRsf2wjcwERFN9pUS6mAnn4KKpgX2uBQtG/W3OsDWPrJk1/+8BSpACQYJbrCn0xXy1DTIIAyWzLtzWgV4c3ScKpbgNcqSpTTVAYpvuDEuuLo9jWtgd6daa4CpJPC95Q/3Hy10jFuKXw=="
     }
   ]
 }
