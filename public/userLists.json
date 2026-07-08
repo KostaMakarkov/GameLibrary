@@ -7,6 +7,12 @@
       "gameIds": [
         "101ccbaf-a222-4ab3-8eea-92303e23ce63"
       ]
+    },
+    {
+      "id": "e07b7558-51bf-4cfd-89d2-f3a165c12ca6",
+      "ownerId": "e3553064-43a2-4db0-ac99-db5294cc6926",
+      "name": "Finished",
+      "gameIds": []
     }
   ]
 }
