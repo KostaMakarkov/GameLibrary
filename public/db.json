@@ -30,21 +30,6 @@
       "platform": "PC",
       "createdAt": "2026-01-11T09:00:00Z",
       "updatedAt": "2026-01-11T09:00:00Z"
-    },
-    {
-      "id": "g1a1e6a0-0000-4a11-8a11-000000000004",
-      "title": "Into the Breach",
-      "description": "A turn-based strategy game about defending cities from giant monsters using time-travel mechs.",
-      "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
-      "rating": 5,
-      "recommended": true,
-      "tags": [
-        "turn-based",
-        "puzzle"
-      ],
-      "platform": "PC / Switch",
-      "createdAt": "2026-01-13T09:00:00Z",
-      "updatedAt": "2026-01-13T09:00:00Z"
     }
   ]
 }
