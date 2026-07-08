@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getFile, putTextFile } from '../lib/github'
-import { purgeDbCache } from '../lib/db'
 import { getRepoInfo } from '../lib/repoInfo'
 import { DB_PATH, GITHUB_BRANCH } from '../config'
 import type { Db } from '../types'
@@ -31,7 +30,6 @@ export function useDbWriter() {
         GITHUB_BRANCH,
         current?.sha,
       )
-      purgeDbCache()
       return nextDb
     },
     [token],

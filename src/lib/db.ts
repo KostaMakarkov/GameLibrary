@@ -1,13 +1,16 @@
-import { DB_PATH, GITHUB_BRANCH } from '../config'
+import { GITHUB_BRANCH } from '../config'
 import { getRepoInfo } from './repoInfo'
 import type { Db } from '../types'
 
+// raw.githubusercontent.com is used instead of jsDelivr: its cache window is
+// short and predictable (~5 min), with no separate branch-pointer cache to
+// go stale independently of file content, and no purge step required.
 function getDbUrl(): string {
   if (import.meta.env.DEV) {
     return `${import.meta.env.BASE_URL}db.json`
   }
   const { owner, repo } = getRepoInfo()
-  return `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${GITHUB_BRANCH}/${DB_PATH}`
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${GITHUB_BRANCH}/public/db.json`
 }
 
 export async function fetchDb(): Promise<Db> {
@@ -16,18 +19,11 @@ export async function fetchDb(): Promise<Db> {
   return res.json()
 }
 
-// jsDelivr caches by branch for a while; purge after a write so readers see it right away.
-export function purgeDbCache(): void {
-  if (import.meta.env.DEV) return
-  const { owner, repo } = getRepoInfo()
-  fetch(`https://purge.jsdelivr.net/gh/${owner}/${repo}@${GITHUB_BRANCH}/${DB_PATH}`).catch(() => {})
-}
-
 export function getImageUrl(imagePath?: string): string | undefined {
   if (!imagePath) return undefined
   if (import.meta.env.DEV) {
     return `${import.meta.env.BASE_URL}${imagePath}`
   }
   const { owner, repo } = getRepoInfo()
-  return `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${GITHUB_BRANCH}/public/${imagePath}`
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${GITHUB_BRANCH}/public/${imagePath}`
 }
