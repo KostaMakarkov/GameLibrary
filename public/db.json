@@ -16,20 +16,5 @@
       "slug": "co-op"
     }
   ],
-  "games": [
-    {
-      "id": "g1a1e6a0-0000-4a11-8a11-000000000002",
-      "title": "Slay the Spire",
-      "description": "A deckbuilding roguelike that fuses card games with the roguelike genre.",
-      "categoryId": "c1a1e6a0-1111-4a11-8a11-000000000001",
-      "rating": 4,
-      "recommended": false,
-      "tags": [
-        "deckbuilder"
-      ],
-      "platform": "PC",
-      "createdAt": "2026-01-11T09:00:00Z",
-      "updatedAt": "2026-01-11T09:00:00Z"
-    }
-  ]
+  "games": []
 }
