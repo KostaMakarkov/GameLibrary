@@ -13,6 +13,7 @@ export class GitHubApiError extends Error {
 
 async function ghFetch(token: string, path: string, init?: RequestInit): Promise<Response> {
   const res = await fetch(`${API}${path}`, {
+    cache: 'no-store',
     ...init,
     headers: {
       Authorization: `Bearer ${token}`,
