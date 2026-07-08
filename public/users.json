@@ -19,6 +19,16 @@
       "salt": "YQsoMlUd05cdZJcKUFNeHg==",
       "iv": "uIrNoxau3eMN8s4P",
       "ciphertext": "7tN2DwWHuff/EuHMD1o/mzsY/iSG9+mS6bZ5poPVYmcyPLTesksha721Mb6OUGHP5KPliAk01+oh896U7k7iGTOXjvX+anEnIApTOJKqsZE1d3fD6sxa+QSYaMXt7+Pv2aS0Vhsv0dtT1eogzw=="
+    },
+    {
+      "id": "165827e5-8dd0-45da-8acd-81009fdaad9e",
+      "username": "Boris.M",
+      "displayName": "Boris",
+      "isOwner": false,
+      "mustChangePin": true,
+      "salt": "ZMtOiZZb3h8is5AM7cogOQ==",
+      "iv": "qZzi3XeQmqBQUWig",
+      "ciphertext": "Djkjm+wpoPApBerdBbi16Ti7vCQagFae/QlJ4+kJYL+Z3f5wFq6oSxjq5+v4Tq/+mus9ReksHU8Di92EwTPY+LewTJpd3tax7YU2h1wqNW15t26uxqNarkb80y/kSxq13LHKOfpJSl2hIswEGw=="
     }
   ]
 }
