@@ -16,21 +16,5 @@
       "slug": "co-op"
     }
   ],
-  "games": [
-    {
-      "id": "g1a1e6a0-0000-4a11-8a11-000000000003",
-      "title": "Civilization VI",
-      "description": "Build an empire to stand the test of time in this turn-based strategy classic.",
-      "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
-      "rating": 4,
-      "recommended": true,
-      "tags": [
-        "4x",
-        "turn-based"
-      ],
-      "platform": "PC",
-      "createdAt": "2026-01-12T09:00:00Z",
-      "updatedAt": "2026-01-12T09:00:00Z"
-    }
-  ]
+  "games": []
 }
