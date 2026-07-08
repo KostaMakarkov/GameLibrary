@@ -18,15 +18,45 @@ export interface GameFormValues {
   platform: string
 }
 
+const PLATFORM_OPTIONS = ['PC', 'PS4', 'PS5', 'Switch', 'Switch2', 'XBOX']
+const NEW_CATEGORY_VALUE = '__new__'
+
+function parsePlatform(platform: string | undefined): { selected: string[]; other: string } {
+  if (!platform) return { selected: [], other: '' }
+  const tokens = platform
+    .split('/')
+    .map((t) => t.trim())
+    .filter(Boolean)
+  const selected: string[] = []
+  const other: string[] = []
+  for (const token of tokens) {
+    const match = PLATFORM_OPTIONS.find((opt) => opt.toLowerCase() === token.toLowerCase())
+    if (match) {
+      if (!selected.includes(match)) selected.push(match)
+    } else {
+      other.push(token)
+    }
+  }
+  return { selected, other: other.join(' / ') }
+}
+
 interface GameFormProps {
   categories: Category[]
   initial?: Game
   onSubmit: (values: GameFormValues) => void
   onCancel: () => void
+  onCreateCategory?: (name: string) => Promise<Category>
   submitting?: boolean
 }
 
-export function GameForm({ categories, initial, onSubmit, onCancel, submitting }: GameFormProps) {
+export function GameForm({
+  categories,
+  initial,
+  onSubmit,
+  onCancel,
+  onCreateCategory,
+  submitting,
+}: GameFormProps) {
   const { token } = useAuth()
   const [title, setTitle] = useState(initial?.title ?? '')
   const [description, setDescription] = useState(initial?.description ?? '')
@@ -35,9 +65,17 @@ export function GameForm({ categories, initial, onSubmit, onCancel, submitting }
   const [rating, setRating] = useState(initial?.rating ?? 3)
   const [recommended, setRecommended] = useState(initial?.recommended ?? false)
   const [tagsText, setTagsText] = useState(initial?.tags.join(', ') ?? '')
-  const [platform, setPlatform] = useState(initial?.platform ?? '')
+  const initialPlatform = parsePlatform(initial?.platform)
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(initialPlatform.selected)
+  const [otherEnabled, setOtherEnabled] = useState(initialPlatform.other.length > 0)
+  const [otherPlatform, setOtherPlatform] = useState(initialPlatform.other)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const [creatingCategory, setCreatingCategory] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
+  const [creatingCategoryBusy, setCreatingCategoryBusy] = useState(false)
+  const [creatingCategoryError, setCreatingCategoryError] = useState<string | null>(null)
 
   const handleImageChange = async (file: File | undefined) => {
     if (!file || !token) return
@@ -54,9 +92,42 @@ export function GameForm({ categories, initial, onSubmit, onCancel, submitting }
     }
   }
 
+  const handleCategoryChange = (value: string) => {
+    if (value === NEW_CATEGORY_VALUE) {
+      setCreatingCategory(true)
+      return
+    }
+    setCategoryId(value)
+  }
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim() || !onCreateCategory) return
+    setCreatingCategoryBusy(true)
+    setCreatingCategoryError(null)
+    try {
+      const category = await onCreateCategory(newCategoryName.trim())
+      setCategoryId(category.id)
+      setCreatingCategory(false)
+      setNewCategoryName('')
+    } catch (err) {
+      setCreatingCategoryError(err instanceof Error ? err.message : 'Failed to create category')
+    } finally {
+      setCreatingCategoryBusy(false)
+    }
+  }
+
+  const togglePlatform = (name: string) => {
+    setSelectedPlatforms((prev) =>
+      prev.includes(name) ? prev.filter((p) => p !== name) : [...prev, name],
+    )
+  }
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !categoryId) return
+    const platform = [...selectedPlatforms, ...(otherEnabled && otherPlatform.trim() ? [otherPlatform.trim()] : [])].join(
+      ' / ',
+    )
     onSubmit({
       title: title.trim(),
       description: description.trim(),
@@ -68,7 +139,7 @@ export function GameForm({ categories, initial, onSubmit, onCancel, submitting }
         .split(',')
         .map((t) => t.trim())
         .filter(Boolean),
-      platform: platform.trim(),
+      platform,
     })
   }
 
@@ -97,12 +168,40 @@ export function GameForm({ categories, initial, onSubmit, onCancel, submitting }
         />
       </div>
 
-      <div className="flex gap-3">
-        <div className="flex-1">
-          <label className="mb-1 block text-xs font-medium text-slate-500">Category</label>
+      <div>
+        <label className="mb-1 block text-xs font-medium text-slate-500">Category</label>
+        {creatingCategory ? (
+          <div className="space-y-1.5">
+            <div className="flex gap-2">
+              <input
+                autoFocus
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="New category name"
+                className="flex-1 rounded border border-slate-300 bg-transparent px-3 py-1.5 text-sm dark:border-slate-700"
+              />
+              <button
+                type="button"
+                onClick={handleCreateCategory}
+                disabled={creatingCategoryBusy || !newCategoryName.trim()}
+                className="rounded bg-slate-800 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-50"
+              >
+                {creatingCategoryBusy ? 'Adding…' : 'Add'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreatingCategory(false)}
+                className="rounded px-3 py-1.5 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                Cancel
+              </button>
+            </div>
+            {creatingCategoryError && <p className="text-xs text-red-600">{creatingCategoryError}</p>}
+          </div>
+        ) : (
           <select
             value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
             className="w-full rounded border border-slate-300 bg-transparent px-2 py-1.5 text-sm dark:border-slate-700"
           >
             {categories.map((c) => (
@@ -110,17 +209,48 @@ export function GameForm({ categories, initial, onSubmit, onCancel, submitting }
                 {c.name}
               </option>
             ))}
+            {onCreateCategory && <option value={NEW_CATEGORY_VALUE}>+ Add new category…</option>}
           </select>
+        )}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-medium text-slate-500">Platform</label>
+        <div className="flex flex-wrap gap-2">
+          {PLATFORM_OPTIONS.map((opt) => (
+            <label
+              key={opt}
+              className="flex items-center gap-1.5 rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-700"
+            >
+              <input
+                type="checkbox"
+                checked={selectedPlatforms.includes(opt)}
+                onChange={() => togglePlatform(opt)}
+              />
+              {opt}
+            </label>
+          ))}
+          <label className="flex items-center gap-1.5 rounded border border-slate-300 px-2 py-1 text-sm dark:border-slate-700">
+            <input
+              type="checkbox"
+              checked={otherEnabled}
+              onChange={(e) => {
+                setOtherEnabled(e.target.checked)
+                if (!e.target.checked) setOtherPlatform('')
+              }}
+            />
+            Other
+          </label>
         </div>
-        <div className="flex-1">
-          <label className="mb-1 block text-xs font-medium text-slate-500">Platform</label>
+        {otherEnabled && (
           <input
-            value={platform}
-            onChange={(e) => setPlatform(e.target.value)}
-            placeholder="PC / Switch"
-            className="w-full rounded border border-slate-300 bg-transparent px-3 py-1.5 text-sm dark:border-slate-700"
+            autoFocus
+            value={otherPlatform}
+            onChange={(e) => setOtherPlatform(e.target.value)}
+            placeholder="Custom platform"
+            className="mt-2 w-full rounded border border-slate-300 bg-transparent px-3 py-1.5 text-sm dark:border-slate-700"
           />
-        </div>
+        )}
       </div>
 
       <div>

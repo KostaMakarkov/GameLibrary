@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { UsersProvider } from './context/UsersContext'
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
+import { EditModeProvider } from './context/EditModeContext'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <UsersProvider>
         <AuthProvider>
           <DataProvider>
-            <App />
+            <EditModeProvider>
+              <App />
+            </EditModeProvider>
           </DataProvider>
         </AuthProvider>
       </UsersProvider>
