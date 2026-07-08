@@ -21,5 +21,24 @@
       "slug": "shooter"
     }
   ],
-  "games": []
+  "games": [
+    {
+      "id": "3dbbf140-a5b3-4268-8130-3aa84de75555",
+      "title": "Battlefield 6",
+      "description": "Classic fps shooter",
+      "categoryId": "36fb9182-1f2b-4d1d-955b-997b8b44a680",
+      "imagePath": "assets/games/9523b084-f256-4ec9-a81f-00880abd8860.jpg",
+      "rating": 5,
+      "recommended": true,
+      "tags": [
+        "Destruction",
+        "Shooting",
+        "Competitive Multiplayer"
+      ],
+      "platform": "PC / PS5 / XBOX",
+      "createdBy": "KostaMakarkov",
+      "createdAt": "2026-07-08T08:27:22.771Z",
+      "updatedAt": "2026-07-08T08:27:22.771Z"
+    }
+  ]
 }
