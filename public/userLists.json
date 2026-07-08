@@ -12,7 +12,9 @@
       "id": "e07b7558-51bf-4cfd-89d2-f3a165c12ca6",
       "ownerId": "e3553064-43a2-4db0-ac99-db5294cc6926",
       "name": "Finished",
-      "gameIds": []
+      "gameIds": [
+        "2cac0d9b-a3c6-4186-b3de-3e652aecd1a6"
+      ]
     },
     {
       "id": "12bd8392-e3f4-422b-8c99-7d8451517691",
