@@ -57,8 +57,27 @@ export function LibraryPage() {
 
   if (!db) return null
 
+  const recentlyAdded = sortGames(db.games, 'recently-added').slice(0, 3)
+
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-6">
+      {recentlyAdded.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Recently added
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recentlyAdded.map((game) => (
+              <GameCard
+                key={game.id}
+                game={game}
+                categoryName={categoryNameById.get(game.categoryId) ?? 'Uncategorized'}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <FiltersBar categories={db.categories} filters={filters} onChange={setFilters} />
 
       {filteredGames.length === 0 ? (

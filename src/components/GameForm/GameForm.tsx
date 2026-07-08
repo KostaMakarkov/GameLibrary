@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { uploadImage } from '../lib/github'
-import { getImageUrl } from '../lib/db'
-import { getRepoInfo } from '../lib/repoInfo'
-import { GITHUB_BRANCH } from '../config'
-import { StarRating } from './StarRating'
-import type { Category, Game } from '../types'
+import { useAuth } from '../../context/AuthContext'
+import { uploadImage } from '../../lib/github'
+import { getImageUrl } from '../../lib/db'
+import { getRepoInfo } from '../../lib/repoInfo'
+import { GITHUB_BRANCH } from '../../config'
+import { StarRating } from '../StarRating'
+import type { Category, Game } from '../../types'
 
 export interface GameFormValues {
   title: string

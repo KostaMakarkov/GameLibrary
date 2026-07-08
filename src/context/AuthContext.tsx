@@ -1,37 +1,47 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
-import { GitHubApiError, getAuthenticatedUser, getRepoPermission } from '../lib/github'
-import { clearToken, loadToken, saveToken } from '../lib/tokenStorage'
+import { getAuthenticatedUser, getRepoPermission } from '../lib/github'
+import { decryptWithPin, encryptWithPin } from '../lib/crypto'
+import { clearSession, loadSession, saveSession } from '../lib/session'
 import { getRepoInfo } from '../lib/repoInfo'
-import type { Permission } from '../types'
+import { useUsers } from './UsersContext'
+import { useUsersWriter } from '../hooks/useUsersWriter'
+import type { Permission, StoredUser } from '../types'
 
 interface AuthState {
-  token: string | null
+  currentUser: StoredUser | null
   username: string | null
+  token: string | null
   permission: Permission | null
   canWrite: boolean
+  isOwner: boolean
   loading: boolean
-  error: string | null
-  login: (token: string) => Promise<void>
+  loginWithPin: (userId: string, pin: string) => Promise<void>
+  completeFirstLogin: (userId: string, tempPin: string, newPin: string) => Promise<void>
+  bootstrapOwner: (username: string, rawToken: string, pin: string) => Promise<void>
+  addUser: (username: string, displayName: string, tempPin: string) => Promise<void>
+  removeUser: (userId: string) => Promise<void>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthState | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { usersDb, loading: usersLoading, applyUsers } = useUsers()
+  const { commitUsers } = useUsersWriter()
+  const [currentUser, setCurrentUser] = useState<StoredUser | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [permission, setPermission] = useState<Permission | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  const verify = useCallback(async (candidateToken: string) => {
+  // Verifies a token against GitHub and records it as the active session identity.
+  const establishSession = useCallback(async (candidateToken: string) => {
     const { owner, repo } = getRepoInfo()
     const user = await getAuthenticatedUser(candidateToken)
     let repoPermission: Permission = 'none'
     try {
       repoPermission = await getRepoPermission(candidateToken, owner, repo, user.login)
-    } catch (err) {
-      // Repo permission lookup fails for non-collaborators; treat as read-only.
+    } catch {
       repoPermission = 'none'
     }
     setUsername(user.login)
@@ -39,51 +49,161 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const stored = loadToken()
-    if (!stored) {
+    if (usersLoading) return
+    const session = loadSession()
+    if (!session || !usersDb) {
       setLoading(false)
       return
     }
-    setToken(stored)
-    verify(stored)
-      .catch((err) => {
-        setError(err instanceof GitHubApiError ? err.message : 'Failed to verify token')
-        clearToken()
+    const user = usersDb.users.find((u) => u.id === session.userId)
+    if (!user) {
+      clearSession()
+      setLoading(false)
+      return
+    }
+    setCurrentUser(user)
+    setToken(session.token)
+    establishSession(session.token)
+      .catch(() => {
+        clearSession()
+        setCurrentUser(null)
         setToken(null)
       })
       .finally(() => setLoading(false))
-  }, [verify])
+  }, [usersLoading, usersDb, establishSession])
 
-  const login = useCallback(
-    async (candidateToken: string) => {
-      setLoading(true)
-      setError(null)
-      try {
-        await verify(candidateToken)
-        saveToken(candidateToken)
-        setToken(candidateToken)
-      } catch (err) {
-        setError(err instanceof GitHubApiError ? err.message : 'Failed to verify token')
-        throw err
-      } finally {
-        setLoading(false)
-      }
+  const loginWithPin = useCallback(
+    async (userId: string, pin: string) => {
+      if (!usersDb) throw new Error('Users not loaded yet')
+      const user = usersDb.users.find((u) => u.id === userId)
+      if (!user) throw new Error('User not found')
+      const decrypted = await decryptWithPin(pin, user)
+      if (!decrypted) throw new Error('Incorrect PIN')
+      await establishSession(decrypted)
+      setCurrentUser(user)
+      setToken(decrypted)
+      saveSession({ userId: user.id, token: decrypted })
     },
-    [verify],
+    [usersDb, establishSession],
+  )
+
+  const completeFirstLogin = useCallback(
+    async (userId: string, tempPin: string, newPin: string) => {
+      if (!usersDb) throw new Error('Users not loaded yet')
+      const user = usersDb.users.find((u) => u.id === userId)
+      if (!user) throw new Error('User not found')
+      const decrypted = await decryptWithPin(tempPin, user)
+      if (!decrypted) throw new Error('Incorrect temporary PIN')
+      await establishSession(decrypted)
+      const encrypted = await encryptWithPin(newPin, decrypted)
+      const nextUser: StoredUser = { ...user, ...encrypted, mustChangePin: false }
+      const nextUsers = { users: usersDb.users.map((u) => (u.id === userId ? nextUser : u)) }
+      await commitUsers(decrypted, nextUsers, `${nextUser.displayName} set their PIN`)
+      applyUsers(nextUsers)
+      setCurrentUser(nextUser)
+      setToken(decrypted)
+      saveSession({ userId: nextUser.id, token: decrypted })
+    },
+    [usersDb, establishSession, commitUsers, applyUsers],
+  )
+
+  const bootstrapOwner = useCallback(
+    async (usernameInput: string, rawToken: string, pin: string) => {
+      const { owner, repo } = getRepoInfo()
+      const ghUser = await getAuthenticatedUser(rawToken)
+      if (ghUser.login !== usernameInput) {
+        throw new Error(`That token belongs to @${ghUser.login}, not @${usernameInput}`)
+      }
+      const perm = await getRepoPermission(rawToken, owner, repo, usernameInput)
+      if (perm !== 'admin' && perm !== 'write') {
+        throw new Error('This token does not have write access to the repo')
+      }
+      const encrypted = await encryptWithPin(pin, rawToken)
+      const newUser: StoredUser = {
+        id: crypto.randomUUID(),
+        username: usernameInput,
+        displayName: usernameInput,
+        isOwner: true,
+        mustChangePin: false,
+        ...encrypted,
+      }
+      const nextUsers = { users: [newUser] }
+      await commitUsers(rawToken, nextUsers, `Set up owner account: ${usernameInput}`)
+      applyUsers(nextUsers)
+      setUsername(ghUser.login)
+      setPermission(perm)
+      setCurrentUser(newUser)
+      setToken(rawToken)
+      saveSession({ userId: newUser.id, token: rawToken })
+    },
+    [commitUsers, applyUsers],
+  )
+
+  const addUser = useCallback(
+    async (usernameInput: string, displayName: string, tempPin: string) => {
+      if (!usersDb || !token) throw new Error('Not logged in')
+      if (usersDb.users.some((u) => u.username.toLowerCase() === usernameInput.toLowerCase())) {
+        throw new Error('That username is already taken')
+      }
+      // Friends without their own GitHub account share the owner's write token,
+      // each encrypted under their own PIN.
+      const encrypted = await encryptWithPin(tempPin, token)
+      const newUser: StoredUser = {
+        id: crypto.randomUUID(),
+        username: usernameInput,
+        displayName,
+        isOwner: false,
+        mustChangePin: true,
+        ...encrypted,
+      }
+      const nextUsers = { users: [...usersDb.users, newUser] }
+      await commitUsers(token, nextUsers, `Add user: ${displayName}`)
+      applyUsers(nextUsers)
+    },
+    [usersDb, token, commitUsers, applyUsers],
+  )
+
+  const removeUser = useCallback(
+    async (userId: string) => {
+      if (!usersDb || !token) throw new Error('Not logged in')
+      const target = usersDb.users.find((u) => u.id === userId)
+      if (!target) return
+      if (target.isOwner) throw new Error("Can't remove the owner account")
+      const nextUsers = { users: usersDb.users.filter((u) => u.id !== userId) }
+      await commitUsers(token, nextUsers, `Remove user: ${target.displayName}`)
+      applyUsers(nextUsers)
+    },
+    [usersDb, token, commitUsers, applyUsers],
   )
 
   const logout = useCallback(() => {
-    clearToken()
+    clearSession()
+    setCurrentUser(null)
     setToken(null)
     setUsername(null)
     setPermission(null)
   }, [])
 
   const canWrite = permission === 'admin' || permission === 'write'
+  const isOwner = currentUser?.isOwner ?? false
 
   return (
     <AuthContext.Provider
-      value={{ token, username, permission, canWrite, loading, error, login, logout }}
+      value={{
+        currentUser,
+        username,
+        token,
+        permission,
+        canWrite,
+        isOwner,
+        loading,
+        loginWithPin,
+        completeFirstLogin,
+        bootstrapOwner,
+        addUser,
+        removeUser,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

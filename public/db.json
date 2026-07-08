@@ -1,8 +1,20 @@
 {
   "categories": [
-    { "id": "c1a1e6a0-1111-4a11-8a11-000000000001", "name": "Roguelikes", "slug": "roguelikes" },
-    { "id": "c1a1e6a0-2222-4a11-8a11-000000000002", "name": "Strategy", "slug": "strategy" },
-    { "id": "c1a1e6a0-3333-4a11-8a11-000000000003", "name": "Co-op", "slug": "co-op" }
+    {
+      "id": "c1a1e6a0-1111-4a11-8a11-000000000001",
+      "name": "Roguelikes",
+      "slug": "roguelikes"
+    },
+    {
+      "id": "c1a1e6a0-2222-4a11-8a11-000000000002",
+      "name": "Strategy",
+      "slug": "strategy"
+    },
+    {
+      "id": "c1a1e6a0-3333-4a11-8a11-000000000003",
+      "name": "Co-op",
+      "slug": "co-op"
+    }
   ],
   "games": [
     {
@@ -12,10 +24,14 @@
       "categoryId": "c1a1e6a0-1111-4a11-8a11-000000000001",
       "rating": 5,
       "recommended": true,
-      "tags": ["action", "story-rich"],
+      "tags": [
+        "action",
+        "story-rich"
+      ],
       "platform": "PC / Switch",
       "createdAt": "2026-01-10T09:00:00Z",
-      "updatedAt": "2026-01-10T09:00:00Z"
+      "updatedAt": "2026-01-10T09:00:00Z",
+      "createdBy": "seed-data"
     },
     {
       "id": "g1a1e6a0-0000-4a11-8a11-000000000002",
@@ -24,10 +40,13 @@
       "categoryId": "c1a1e6a0-1111-4a11-8a11-000000000001",
       "rating": 4,
       "recommended": false,
-      "tags": ["deckbuilder"],
+      "tags": [
+        "deckbuilder"
+      ],
       "platform": "PC",
       "createdAt": "2026-01-11T09:00:00Z",
-      "updatedAt": "2026-01-11T09:00:00Z"
+      "updatedAt": "2026-01-11T09:00:00Z",
+      "createdBy": "seed-data"
     },
     {
       "id": "g1a1e6a0-0000-4a11-8a11-000000000003",
@@ -36,10 +55,14 @@
       "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
       "rating": 4,
       "recommended": true,
-      "tags": ["4x", "turn-based"],
+      "tags": [
+        "4x",
+        "turn-based"
+      ],
       "platform": "PC",
       "createdAt": "2026-01-12T09:00:00Z",
-      "updatedAt": "2026-01-12T09:00:00Z"
+      "updatedAt": "2026-01-12T09:00:00Z",
+      "createdBy": "seed-data"
     },
     {
       "id": "g1a1e6a0-0000-4a11-8a11-000000000004",
@@ -48,10 +71,14 @@
       "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
       "rating": 5,
       "recommended": true,
-      "tags": ["turn-based", "puzzle"],
+      "tags": [
+        "turn-based",
+        "puzzle"
+      ],
       "platform": "PC / Switch",
       "createdAt": "2026-01-13T09:00:00Z",
-      "updatedAt": "2026-01-13T09:00:00Z"
+      "updatedAt": "2026-01-13T09:00:00Z",
+      "createdBy": "seed-data"
     },
     {
       "id": "g1a1e6a0-0000-4a11-8a11-000000000005",
@@ -60,10 +87,14 @@
       "categoryId": "c1a1e6a0-3333-4a11-8a11-000000000003",
       "rating": 5,
       "recommended": true,
-      "tags": ["co-op", "adventure"],
+      "tags": [
+        "co-op",
+        "adventure"
+      ],
       "platform": "PC / PS5 / Xbox",
       "createdAt": "2026-01-14T09:00:00Z",
-      "updatedAt": "2026-01-14T09:00:00Z"
+      "updatedAt": "2026-01-14T09:00:00Z",
+      "createdBy": "seed-data"
     },
     {
       "id": "g1a1e6a0-0000-4a11-8a11-000000000006",
@@ -72,10 +103,14 @@
       "categoryId": "c1a1e6a0-3333-4a11-8a11-000000000003",
       "rating": 3,
       "recommended": false,
-      "tags": ["co-op", "party"],
+      "tags": [
+        "co-op",
+        "party"
+      ],
       "platform": "PC / Switch",
       "createdAt": "2026-01-15T09:00:00Z",
-      "updatedAt": "2026-01-15T09:00:00Z"
+      "updatedAt": "2026-01-15T09:00:00Z",
+      "createdBy": "seed-data"
     }
   ]
 }

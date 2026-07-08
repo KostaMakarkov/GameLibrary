@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { getImageUrl } from '../lib/db'
-import { StarRating } from './StarRating'
-import { RecommendedBadge } from './RecommendedBadge'
-import type { Game } from '../types'
+import { getImageUrl } from '../../lib/db'
+import { StarRating } from '../StarRating'
+import { RecommendedBadge } from '../RecommendedBadge'
+import type { Game } from '../../types'
 
 interface GameCardProps {
   game: Game
@@ -58,6 +58,9 @@ export function GameCard({ game, categoryName, actions }: GameCardProps) {
           <StarRating value={game.rating} />
           {actions}
         </div>
+        {game.createdBy && (
+          <p className="text-xs text-slate-400">Added by {game.createdBy}</p>
+        )}
       </div>
     </div>
   )

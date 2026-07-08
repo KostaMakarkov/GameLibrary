@@ -17,7 +17,7 @@ function nowIso(): string {
 }
 
 export function AdminPage() {
-  const { username, canWrite, loading } = useAuth()
+  const { username, currentUser, canWrite, loading } = useAuth()
   const { db } = useData()
   const { commitDb } = useDbWriter()
   const [tab, setTab] = useState<Tab>('games')
@@ -98,6 +98,7 @@ export function AdminPage() {
     const game: Game = {
       id: crypto.randomUUID(),
       ...values,
+      createdBy: currentUser?.displayName ?? 'unknown',
       createdAt: nowIso(),
       updatedAt: nowIso(),
     }

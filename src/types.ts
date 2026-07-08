@@ -14,6 +14,7 @@ export interface Game {
   recommended: boolean
   tags: string[]
   platform: string
+  createdBy: string
   createdAt: string
   updatedAt: string
 }
@@ -24,3 +25,18 @@ export interface Db {
 }
 
 export type Permission = 'admin' | 'write' | 'read' | 'none'
+
+export interface StoredUser {
+  id: string
+  username: string
+  displayName: string
+  isOwner: boolean
+  mustChangePin: boolean
+  salt: string
+  iv: string
+  ciphertext: string
+}
+
+export interface UsersDb {
+  users: StoredUser[]
+}

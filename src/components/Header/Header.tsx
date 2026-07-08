@@ -1,8 +1,8 @@
 import { Link } from 'react-router'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../../context/AuthContext'
 
 export function Header() {
-  const { username, canWrite, loading, logout } = useAuth()
+  const { currentUser, canWrite, isOwner, loading, logout } = useAuth()
 
   return (
     <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -19,11 +19,16 @@ export function Header() {
               Admin
             </Link>
           )}
+          {isOwner && (
+            <Link to="/users" className="hover:underline">
+              Users
+            </Link>
+          )}
           {loading ? (
             <span className="text-slate-400">Checking…</span>
-          ) : username ? (
+          ) : currentUser ? (
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 dark:text-slate-400">@{username}</span>
+              <span className="text-slate-500 dark:text-slate-400">{currentUser.displayName}</span>
               <button onClick={logout} className="text-slate-500 underline hover:text-slate-800 dark:hover:text-slate-200">
                 Log out
               </button>

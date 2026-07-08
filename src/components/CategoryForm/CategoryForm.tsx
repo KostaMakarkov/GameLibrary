@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import type { Category } from '../types'
+import type { Category } from '../../types'
 
 interface CategoryFormProps {
   initial?: Category

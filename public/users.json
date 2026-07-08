@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "id": "e3553064-43a2-4db0-ac99-db5294cc6926",
+      "username": "KostaMakarkov",
+      "displayName": "KostaMakarkov",
+      "isOwner": true,
+      "mustChangePin": false,
+      "salt": "t7Icc/TumJZvSJQUzXN/iw==",
+      "iv": "HTeuGUmclU8Ujfno",
+      "ciphertext": "YCIM/5dr/PDL+F9SsXWkZ2qq5SAq/uBTZxnkJs9HzVQb9YU0VRdltwzbfC2pbTc4wlodQAVYDdOU8wcYwU1k2hikm2b2Ol57hUDc9WqSXmuqQp6stuong+plmbVqHx18vS2DHwEcUByRI3E8uQ=="
+    }
+  ]
+}

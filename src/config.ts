@@ -1,5 +1,6 @@
 export const GITHUB_BRANCH = 'main'
 export const DB_PATH = 'public/db.json'
+export const USERS_PATH = 'public/users.json'
 export const IMAGES_DIR = 'public/assets/games'
 
 // Only used in local dev when testing GitHub read/write against a real repo
