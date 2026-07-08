@@ -75,21 +75,6 @@
       "platform": "PC / Switch",
       "createdAt": "2026-01-13T09:00:00Z",
       "updatedAt": "2026-01-13T09:00:00Z"
-    },
-    {
-      "id": "g1a1e6a0-0000-4a11-8a11-000000000005",
-      "title": "It Takes Two",
-      "description": "A co-op adventure through a wildly inventive world built entirely for two players.",
-      "categoryId": "c1a1e6a0-3333-4a11-8a11-000000000003",
-      "rating": 5,
-      "recommended": true,
-      "tags": [
-        "co-op",
-        "adventure"
-      ],
-      "platform": "PC / PS5 / Xbox",
-      "createdAt": "2026-01-14T09:00:00Z",
-      "updatedAt": "2026-01-14T09:00:00Z"
     }
   ]
 }
