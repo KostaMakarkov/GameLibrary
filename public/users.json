@@ -39,6 +39,16 @@
       "salt": "WNqZXswo6dV5OL9zbYDAaA==",
       "iv": "pXAvinCcpSLeuOWT",
       "ciphertext": "IBCOsO4TRsf2wjcwERFN9pUS6mAnn4KKpgX2uBQtG/W3OsDWPrJk1/+8BSpACQYJbrCn0xXy1DTIIAyWzLtzWgV4c3ScKpbgNcqSpTTVAYpvuDEuuLo9jWtgd6daa4CpJPC95Q/3Hy10jFuKXw=="
+    },
+    {
+      "id": "68e3f815-078d-4230-8453-7c5c6686620a",
+      "username": "Kosta.test",
+      "displayName": "Kosta.test",
+      "isOwner": false,
+      "mustChangePin": true,
+      "salt": "Scl+uTRq5jW+juR9PKeT0w==",
+      "iv": "rBrXnKr/kt1CVNey",
+      "ciphertext": "g6yd/Br7rgYsYcKzoc/5/9jcxhBflZWwvefKCUy4/scQ+n3Xn1X/bEncrbTuwvWlo0vSDpRSMs4M3ZdGAGA/nixgCOtAW/wVakW281S4f/NwTw346dA9TxXtPz6kU7lupL7o+1gsSEp+nFWKTA=="
     }
   ]
 }
