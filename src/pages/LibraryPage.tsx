@@ -87,8 +87,7 @@ export function LibraryPage() {
       updatedAt: nowIso(),
     }
     run(
-      db,
-      { ...db, games: [...db.games, game] },
+      (current) => ({ ...current, games: [...current.games, game] }),
       `Add game: ${values.title}`,
       `Added "${values.title}"`,
       `Failed to add "${values.title}"`,
@@ -98,12 +97,12 @@ export function LibraryPage() {
 
   const handleEditGame = (values: GameFormValues) => {
     if (!editingGame) return
-    const nextGames = db.games.map((g) =>
-      g.id === editingGame.id ? { ...g, ...values, updatedAt: nowIso() } : g,
-    )
+    const gameId = editingGame.id
     run(
-      db,
-      { ...db, games: nextGames },
+      (current) => ({
+        ...current,
+        games: current.games.map((g) => (g.id === gameId ? { ...g, ...values, updatedAt: nowIso() } : g)),
+      }),
       `Update game: ${values.title}`,
       `Updated "${values.title}"`,
       `Failed to update "${values.title}"`,
@@ -113,11 +112,10 @@ export function LibraryPage() {
 
   const handleDeleteGame = () => {
     if (!deletingGame) return
+    const gameId = deletingGame.id
     const title = deletingGame.title
-    const nextGames = db.games.filter((g) => g.id !== deletingGame.id)
     run(
-      db,
-      { ...db, games: nextGames },
+      (current) => ({ ...current, games: current.games.filter((g) => g.id !== gameId) }),
       `Delete game: ${title}`,
       `Deleted "${title}"`,
       `Failed to delete "${title}"`,
@@ -130,8 +128,7 @@ export function LibraryPage() {
   const handleCreateCategory = (name: string): Promise<Category> => {
     const category: Category = { id: crypto.randomUUID(), name, slug: slugify(name) }
     run(
-      db,
-      { ...db, categories: [...db.categories, category] },
+      (current) => ({ ...current, categories: [...current.categories, category] }),
       `Add category: ${name}`,
       `Added category "${name}"`,
       `Failed to add category "${name}"`,
@@ -144,12 +141,12 @@ export function LibraryPage() {
   }
 
   const handleEditCategory = (category: Category, name: string) => {
-    const nextCategories = db.categories.map((c) =>
-      c.id === category.id ? { ...c, name, slug: slugify(name) } : c,
-    )
+    const categoryId = category.id
     run(
-      db,
-      { ...db, categories: nextCategories },
+      (current) => ({
+        ...current,
+        categories: current.categories.map((c) => (c.id === categoryId ? { ...c, name, slug: slugify(name) } : c)),
+      }),
       `Update category: ${name}`,
       `Updated category "${name}"`,
       `Failed to update category "${name}"`,
@@ -157,10 +154,9 @@ export function LibraryPage() {
   }
 
   const handleDeleteCategory = (category: Category) => {
-    const nextCategories = db.categories.filter((c) => c.id !== category.id)
+    const categoryId = category.id
     run(
-      db,
-      { ...db, categories: nextCategories },
+      (current) => ({ ...current, categories: current.categories.filter((c) => c.id !== categoryId) }),
       `Delete category: ${category.name}`,
       `Deleted category "${category.name}"`,
       `Failed to delete category "${category.name}"`,

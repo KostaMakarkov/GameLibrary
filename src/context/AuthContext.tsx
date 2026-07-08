@@ -96,10 +96,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!decrypted) throw new Error('Incorrect temporary PIN')
       await establishSession(decrypted)
       const encrypted = await encryptWithPin(newPin, decrypted)
-      const nextUser: StoredUser = { ...user, ...encrypted, mustChangePin: false }
-      const nextUsers = { users: usersDb.users.map((u) => (u.id === userId ? nextUser : u)) }
-      await commitUsers(decrypted, nextUsers, `${nextUser.displayName} set their PIN`)
+      const nextUsers = await commitUsers(
+        decrypted,
+        (current) => ({
+          users: current.users.map((u) => (u.id === userId ? { ...u, ...encrypted, mustChangePin: false } : u)),
+        }),
+        `${user.displayName} set their PIN`,
+      )
       applyUsers(nextUsers)
+      const nextUser = nextUsers.users.find((u) => u.id === userId) ?? { ...user, ...encrypted, mustChangePin: false }
       setCurrentUser(nextUser)
       setToken(decrypted)
       saveSession({ userId: nextUser.id, token: decrypted })
@@ -127,8 +132,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mustChangePin: false,
         ...encrypted,
       }
-      const nextUsers = { users: [newUser] }
-      await commitUsers(rawToken, nextUsers, `Set up owner account: ${usernameInput}`)
+      const nextUsers = await commitUsers(
+        rawToken,
+        (current) => {
+          if (current.users.length > 0) throw new Error('Someone already set up the owner account')
+          return { users: [newUser] }
+        },
+        `Set up owner account: ${usernameInput}`,
+      )
       applyUsers(nextUsers)
       setUsername(ghUser.login)
       setPermission(perm)
@@ -141,10 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const addUser = useCallback(
     async (usernameInput: string, displayName: string, tempPin: string) => {
-      if (!usersDb || !token) throw new Error('Not logged in')
-      if (usersDb.users.some((u) => u.username.toLowerCase() === usernameInput.toLowerCase())) {
-        throw new Error('That username is already taken')
-      }
+      if (!token) throw new Error('Not logged in')
       // Friends without their own GitHub account share the owner's write token,
       // each encrypted under their own PIN.
       const encrypted = await encryptWithPin(tempPin, token)
@@ -156,21 +164,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         mustChangePin: true,
         ...encrypted,
       }
-      const nextUsers = { users: [...usersDb.users, newUser] }
-      await commitUsers(token, nextUsers, `Add user: ${displayName}`)
+      const nextUsers = await commitUsers(
+        token,
+        (current) => {
+          if (current.users.some((u) => u.username.toLowerCase() === usernameInput.toLowerCase())) {
+            throw new Error('That username is already taken')
+          }
+          return { users: [...current.users, newUser] }
+        },
+        `Add user: ${displayName}`,
+      )
       applyUsers(nextUsers)
     },
-    [usersDb, token, commitUsers, applyUsers],
+    [token, commitUsers, applyUsers],
   )
 
   const removeUser = useCallback(
     async (userId: string) => {
-      if (!usersDb || !token) throw new Error('Not logged in')
-      const target = usersDb.users.find((u) => u.id === userId)
-      if (!target) return
-      if (target.isOwner) throw new Error("Can't remove the owner account")
-      const nextUsers = { users: usersDb.users.filter((u) => u.id !== userId) }
-      await commitUsers(token, nextUsers, `Remove user: ${target.displayName}`)
+      if (!token) throw new Error('Not logged in')
+      const knownTarget = usersDb?.users.find((u) => u.id === userId)
+      const nextUsers = await commitUsers(
+        token,
+        (current) => {
+          const target = current.users.find((u) => u.id === userId)
+          if (!target) return current
+          if (target.isOwner) throw new Error("Can't remove the owner account")
+          return { users: current.users.filter((u) => u.id !== userId) }
+        },
+        `Remove user: ${knownTarget?.displayName ?? userId}`,
+      )
       applyUsers(nextUsers)
     },
     [usersDb, token, commitUsers, applyUsers],

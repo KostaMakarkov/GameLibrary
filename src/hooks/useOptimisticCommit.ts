@@ -4,26 +4,33 @@ import { useToast } from '../context/ToastContext'
 import { useDbWriter } from './useDbWriter'
 import type { Db } from '../types'
 
-// Applies nextDb to local state immediately and commits to GitHub in the
-// background, reporting the outcome via toast. Reverts to previousDb if the
-// commit fails, so the UI never shows a change that didn't actually save.
+// Applies mutate() to local state immediately for instant feedback, then
+// commits in the background against the file's actual current content (not
+// the possibly-stale local copy) and reconciles local state with whatever
+// really landed. Reverts to the pre-change state and toasts an error if the
+// commit fails.
 export function useOptimisticCommit() {
-  const { applyDb } = useData()
+  const { db, applyDb } = useData()
   const { commitDb } = useDbWriter()
   const { showToast } = useToast()
 
   const run = useCallback(
-    (previousDb: Db, nextDb: Db, message: string, successMessage: string, failureMessage: string) => {
-      applyDb(nextDb)
-      commitDb(nextDb, message)
-        .then(() => showToast('success', successMessage))
+    (mutate: (current: Db) => Db, message: string, successMessage: string, failureMessage: string) => {
+      if (!db) return
+      const previousDb = db
+      applyDb(mutate(db))
+      commitDb(mutate, message)
+        .then((committedDb) => {
+          applyDb(committedDb)
+          showToast('success', successMessage)
+        })
         .catch((err) => {
           applyDb(previousDb)
           const detail = err instanceof Error ? err.message : 'unknown error'
           showToast('error', `${failureMessage}: ${detail}`)
         })
     },
-    [applyDb, commitDb, showToast],
+    [db, applyDb, commitDb, showToast],
   )
 
   return { run }
