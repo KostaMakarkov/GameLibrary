@@ -73,6 +73,24 @@
       "createdBy": "KostaMakarkov",
       "createdAt": "2026-07-08T08:27:22.771Z",
       "updatedAt": "2026-07-08T08:27:22.771Z"
+    },
+    {
+      "id": "a68c0bfc-52fc-4a21-8f4a-29d1c9835f8a",
+      "title": "1666: Amsterdam",
+      "description": "666: Amsterdam is a dark, story-driven action-adventure game developed by Panache Digital Games under the helm of Assassin's Creed creator Patrice Désilets. Players step into the role of Noa, a \"Collector\" wielding witchcraft, to uncover demonic entities hiding among the citizens.",
+      "categoryId": "ae814be4-523b-4709-8bbf-ac374228fa90",
+      "imagePath": "assets/games/9b3c6792-f14f-4e82-92ee-4f735a335f50.jpg",
+      "rating": 3,
+      "recommended": true,
+      "tags": [
+        "Assassins creed like",
+        "rpg"
+      ],
+      "platform": "PC / PS5 / XBOX",
+      "createdBy": "Kosta.test",
+      "createdByUserId": "68e3f815-078d-4230-8453-7c5c6686620a",
+      "createdAt": "2026-07-08T13:15:33.137Z",
+      "updatedAt": "2026-07-08T13:15:33.138Z"
     }
   ]
 }
