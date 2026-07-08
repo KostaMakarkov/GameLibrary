@@ -24,6 +24,11 @@
       "id": "36fb9182-1f2b-4d1d-955b-997b8b44a680",
       "name": "Shooter",
       "slug": "shooter"
+    },
+    {
+      "id": "ae814be4-523b-4709-8bbf-ac374228fa90",
+      "name": "Rpg",
+      "slug": "rpg"
     }
   ],
   "games": [
