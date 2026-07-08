@@ -73,6 +73,23 @@
       "createdBy": "KostaMakarkov",
       "createdAt": "2026-07-08T08:27:22.771Z",
       "updatedAt": "2026-07-08T08:27:22.771Z"
+    },
+    {
+      "id": "101ccbaf-a222-4ab3-8eea-92303e23ce63",
+      "title": "1666: Amsterdam",
+      "description": "1666: Amsterdam is a dark, story-led third-person action-adventure game by Panache Digital Games (founded by Assassin's Creed creator Patrice Désilets). Players investigate demonic \"Originals\" by day using witchcraft and confront them at night, while alternating playstyles by swapping between the witch Noa and a cat from the future.",
+      "categoryId": "c1d750de-6d9d-459a-95d0-a702c91c4fce",
+      "imagePath": "assets/games/f781db14-3956-47b9-908a-482439e14a07.jpg",
+      "rating": 3,
+      "recommended": false,
+      "tags": [
+        "Rpg"
+      ],
+      "platform": "PS5 / PC / XBOX",
+      "createdBy": "KostaMakarkov",
+      "createdByUserId": "e3553064-43a2-4db0-ac99-db5294cc6926",
+      "createdAt": "2026-07-08T09:42:07.158Z",
+      "updatedAt": "2026-07-08T09:42:07.158Z"
     }
   ]
 }
