@@ -16,29 +16,104 @@
       "slug": "co-op"
     },
     {
-      "id": "36fb9182-1f2b-4d1d-955b-997b8b44a680",
-      "name": "Shooter",
-      "slug": "shooter"
+      "id": "9d8a55c2-f8d7-4af8-8cb9-68bca7e128c6",
+      "name": "Souls Like",
+      "slug": "souls-like"
     }
   ],
   "games": [
     {
-      "id": "3dbbf140-a5b3-4268-8130-3aa84de75555",
-      "title": "Battlefield 6",
-      "description": "Classic fps shooter",
-      "categoryId": "36fb9182-1f2b-4d1d-955b-997b8b44a680",
-      "imagePath": "assets/games/9523b084-f256-4ec9-a81f-00880abd8860.jpg",
+      "id": "g1a1e6a0-0000-4a11-8a11-000000000002",
+      "title": "Slay the Spire",
+      "description": "A deckbuilding roguelike that fuses card games with the roguelike genre.",
+      "categoryId": "c1a1e6a0-1111-4a11-8a11-000000000001",
+      "rating": 4,
+      "recommended": false,
+      "tags": [
+        "deckbuilder"
+      ],
+      "platform": "PC",
+      "createdAt": "2026-01-11T09:00:00Z",
+      "updatedAt": "2026-01-11T09:00:00Z"
+    },
+    {
+      "id": "g1a1e6a0-0000-4a11-8a11-000000000003",
+      "title": "Civilization VI",
+      "description": "Build an empire to stand the test of time in this turn-based strategy classic.",
+      "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
+      "rating": 4,
+      "recommended": true,
+      "tags": [
+        "4x",
+        "turn-based"
+      ],
+      "platform": "PC",
+      "createdAt": "2026-01-12T09:00:00Z",
+      "updatedAt": "2026-01-12T09:00:00Z"
+    },
+    {
+      "id": "g1a1e6a0-0000-4a11-8a11-000000000004",
+      "title": "Into the Breach",
+      "description": "A turn-based strategy game about defending cities from giant monsters using time-travel mechs.",
+      "categoryId": "c1a1e6a0-2222-4a11-8a11-000000000002",
       "rating": 5,
       "recommended": true,
       "tags": [
-        "Destruction",
-        "Shooting",
-        "Competitive Multiplayer"
+        "turn-based",
+        "puzzle"
       ],
-      "platform": "PC / PS5 / XBOX",
+      "platform": "PC / Switch",
+      "createdAt": "2026-01-13T09:00:00Z",
+      "updatedAt": "2026-01-13T09:00:00Z"
+    },
+    {
+      "id": "g1a1e6a0-0000-4a11-8a11-000000000005",
+      "title": "It Takes Two",
+      "description": "A co-op adventure through a wildly inventive world built entirely for two players.",
+      "categoryId": "c1a1e6a0-3333-4a11-8a11-000000000003",
+      "rating": 5,
+      "recommended": true,
+      "tags": [
+        "co-op",
+        "adventure"
+      ],
+      "platform": "PC / PS5 / Xbox",
+      "createdAt": "2026-01-14T09:00:00Z",
+      "updatedAt": "2026-01-14T09:00:00Z"
+    },
+    {
+      "id": "g1a1e6a0-0000-4a11-8a11-000000000006",
+      "title": "Overcooked! 2",
+      "description": "Chaotic co-op cooking under absurd time pressure with friends.",
+      "categoryId": "c1a1e6a0-3333-4a11-8a11-000000000003",
+      "rating": 3,
+      "recommended": false,
+      "tags": [
+        "co-op",
+        "party"
+      ],
+      "platform": "PC / Switch",
+      "createdAt": "2026-01-15T09:00:00Z",
+      "updatedAt": "2026-01-15T09:00:00Z"
+    },
+    {
+      "id": "2cac0d9b-a3c6-4186-b3de-3e652aecd1a6",
+      "title": "Lies of P",
+      "description": "Lies of P is a 2023 action role-playing game developed by Neowiz and Round8 Studio and published by Neowiz. The story is loosely based on the 1883 Italian novel The Adventures of Pinocchio by Carlo Collodi, to whom it is dedicated.",
+      "categoryId": "9d8a55c2-f8d7-4af8-8cb9-68bca7e128c6",
+      "imagePath": "assets/games/ad17c877-1a91-447f-aafc-1e38a2268175.jpg",
+      "rating": 5,
+      "recommended": true,
+      "tags": [
+        "Rpg",
+        "Souls like",
+        "Hard",
+        "Story"
+      ],
+      "platform": "PS5 / PC / XBOX",
       "createdBy": "KostaMakarkov",
-      "createdAt": "2026-07-08T08:27:22.771Z",
-      "updatedAt": "2026-07-08T08:27:22.771Z"
+      "createdAt": "2026-07-08T08:40:40.034Z",
+      "updatedAt": "2026-07-08T08:40:40.034Z"
     }
   ]
 }
