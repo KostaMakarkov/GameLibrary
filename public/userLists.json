@@ -1,3 +1,10 @@
 {
-  "lists": []
+  "lists": [
+    {
+      "id": "d8ce89bd-89f9-420a-b61f-74286a9e2a9d",
+      "ownerId": "e3553064-43a2-4db0-ac99-db5294cc6926",
+      "name": "Games To Play",
+      "gameIds": []
+    }
+  ]
 }
