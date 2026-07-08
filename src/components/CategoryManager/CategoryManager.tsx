@@ -6,9 +6,9 @@ import type { Category } from '../../types'
 interface CategoryManagerProps {
   categories: Category[]
   gamesCountByCategory: (categoryId: string) => number
-  onAdd: (name: string) => Promise<void>
-  onEdit: (category: Category, name: string) => Promise<void>
-  onDelete: (category: Category) => Promise<void>
+  onAdd: (name: string) => void
+  onEdit: (category: Category, name: string) => void
+  onDelete: (category: Category) => void
 }
 
 export function CategoryManager({
@@ -21,33 +21,18 @@ export function CategoryManager({
   const [adding, setAdding] = useState(false)
   const [editing, setEditing] = useState<Category | null>(null)
   const [deleting, setDeleting] = useState<Category | null>(null)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const run = async (fn: () => Promise<void>, onDone: () => void) => {
-    setSubmitting(true)
-    setError(null)
-    try {
-      await fn()
-      onDone()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save changes')
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   return (
     <div className="space-y-3">
-      {error && <p className="text-sm text-red-600">{error}</p>}
-
       {categories.map((category) =>
         editing?.id === category.id ? (
           <CategoryForm
             key={category.id}
             initial={category}
-            submitting={submitting}
-            onSubmit={(name) => run(() => onEdit(category, name), () => setEditing(null))}
+            onSubmit={(name) => {
+              onEdit(category, name)
+              setEditing(null)
+            }}
             onCancel={() => setEditing(null)}
           />
         ) : (
@@ -84,8 +69,10 @@ export function CategoryManager({
 
       {adding ? (
         <CategoryForm
-          submitting={submitting}
-          onSubmit={(name) => run(() => onAdd(name), () => setAdding(false))}
+          onSubmit={(name) => {
+            onAdd(name)
+            setAdding(false)
+          }}
           onCancel={() => setAdding(false)}
         />
       ) : (
@@ -101,7 +88,10 @@ export function CategoryManager({
         <ConfirmDialog
           title="Delete category"
           message={`Delete "${deleting.name}"? This can't be undone.`}
-          onConfirm={() => run(() => onDelete(deleting), () => setDeleting(null))}
+          onConfirm={() => {
+            onDelete(deleting)
+            setDeleting(null)
+          }}
           onCancel={() => setDeleting(null)}
         />
       )}

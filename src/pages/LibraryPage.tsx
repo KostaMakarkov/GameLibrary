@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
 import { useEditMode } from '../context/EditModeContext'
-import { useDbWriter } from '../hooks/useDbWriter'
+import { useOptimisticCommit } from '../hooks/useOptimisticCommit'
 import { GameCard } from '../components/GameCard'
 import { FiltersBar, type Filters } from '../components/FiltersBar'
 import { FloatingAddButton } from '../components/FloatingAddButton'
@@ -11,7 +11,7 @@ import { GameForm, type GameFormValues } from '../components/GameForm'
 import { CategoryManager } from '../components/CategoryManager'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { slugify } from '../lib/slug'
-import type { Category, Db, Game } from '../types'
+import type { Category, Game } from '../types'
 
 const DEFAULT_FILTERS: Filters = {
   search: '',
@@ -41,15 +41,13 @@ export function LibraryPage() {
   const { currentUser, canWrite } = useAuth()
   const { db, loading, error } = useData()
   const { editMode } = useEditMode()
-  const { commitDb } = useDbWriter()
+  const { run } = useOptimisticCommit()
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
 
   const [addingGame, setAddingGame] = useState(false)
   const [editingGame, setEditingGame] = useState<Game | null>(null)
   const [deletingGame, setDeletingGame] = useState<Game | null>(null)
   const [managingCategories, setManagingCategories] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [saveError, setSaveError] = useState<string | null>(null)
 
   const categoryNameById = useMemo(() => {
     const map = new Map<string, string>()
@@ -80,21 +78,7 @@ export function LibraryPage() {
 
   if (!db) return null
 
-  const runCommit = async (nextDb: Db, message: string) => {
-    setSaving(true)
-    setSaveError(null)
-    try {
-      await commitDb(nextDb, message)
-      return true
-    } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Failed to save changes')
-      return false
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  const handleAddGame = async (values: GameFormValues) => {
+  const handleAddGame = (values: GameFormValues) => {
     const game: Game = {
       id: crypto.randomUUID(),
       ...values,
@@ -102,46 +86,85 @@ export function LibraryPage() {
       createdAt: nowIso(),
       updatedAt: nowIso(),
     }
-    const ok = await runCommit({ ...db, games: [...db.games, game] }, `Add game: ${values.title}`)
-    if (ok) setAddingGame(false)
+    run(
+      db,
+      { ...db, games: [...db.games, game] },
+      `Add game: ${values.title}`,
+      `Added "${values.title}"`,
+      `Failed to add "${values.title}"`,
+    )
+    setAddingGame(false)
   }
 
-  const handleEditGame = async (values: GameFormValues) => {
+  const handleEditGame = (values: GameFormValues) => {
     if (!editingGame) return
     const nextGames = db.games.map((g) =>
       g.id === editingGame.id ? { ...g, ...values, updatedAt: nowIso() } : g,
     )
-    const ok = await runCommit({ ...db, games: nextGames }, `Update game: ${values.title}`)
-    if (ok) setEditingGame(null)
+    run(
+      db,
+      { ...db, games: nextGames },
+      `Update game: ${values.title}`,
+      `Updated "${values.title}"`,
+      `Failed to update "${values.title}"`,
+    )
+    setEditingGame(null)
   }
 
-  const handleDeleteGame = async () => {
+  const handleDeleteGame = () => {
     if (!deletingGame) return
+    const title = deletingGame.title
     const nextGames = db.games.filter((g) => g.id !== deletingGame.id)
-    const ok = await runCommit({ ...db, games: nextGames }, `Delete game: ${deletingGame.title}`)
-    if (ok) setDeletingGame(null)
+    run(
+      db,
+      { ...db, games: nextGames },
+      `Delete game: ${title}`,
+      `Deleted "${title}"`,
+      `Failed to delete "${title}"`,
+    )
+    setDeletingGame(null)
   }
 
-  const handleCreateCategory = async (name: string): Promise<Category> => {
+  // Returns the new category immediately (optimistically) so GameForm can
+  // select it right away, while the real commit runs in the background.
+  const handleCreateCategory = (name: string): Promise<Category> => {
     const category: Category = { id: crypto.randomUUID(), name, slug: slugify(name) }
-    await commitDb({ ...db, categories: [...db.categories, category] }, `Add category: ${name}`)
-    return category
+    run(
+      db,
+      { ...db, categories: [...db.categories, category] },
+      `Add category: ${name}`,
+      `Added category "${name}"`,
+      `Failed to add category "${name}"`,
+    )
+    return Promise.resolve(category)
   }
 
-  const handleAddCategory = async (name: string) => {
-    await handleCreateCategory(name)
+  const handleAddCategory = (name: string) => {
+    handleCreateCategory(name)
   }
 
-  const handleEditCategory = async (category: Category, name: string) => {
+  const handleEditCategory = (category: Category, name: string) => {
     const nextCategories = db.categories.map((c) =>
       c.id === category.id ? { ...c, name, slug: slugify(name) } : c,
     )
-    await commitDb({ ...db, categories: nextCategories }, `Update category: ${name}`)
+    run(
+      db,
+      { ...db, categories: nextCategories },
+      `Update category: ${name}`,
+      `Updated category "${name}"`,
+      `Failed to update category "${name}"`,
+    )
   }
 
-  const handleDeleteCategory = async (category: Category) => {
+  const handleDeleteCategory = (category: Category) => {
     const nextCategories = db.categories.filter((c) => c.id !== category.id)
-    await commitDb({ ...db, categories: nextCategories }, `Delete category: ${category.name}`)
+    run(
+      db,
+      { ...db, categories: nextCategories },
+      `Delete category: ${category.name}`,
+      `Deleted category "${category.name}"`,
+      `Failed to delete category "${category.name}"`,
+    )
   }
 
   const gamesInCategory = (categoryId: string) => db.games.filter((g) => g.categoryId === categoryId).length
@@ -172,8 +195,6 @@ export function LibraryPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 pb-24">
-      {saveError && <p className="text-sm text-red-600">{saveError}</p>}
-
       {recentlyAdded.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
@@ -213,7 +234,6 @@ export function LibraryPage() {
           <GameForm
             categories={db.categories}
             initial={editingGame ?? undefined}
-            submitting={saving}
             onCreateCategory={handleCreateCategory}
             onSubmit={editingGame ? handleEditGame : handleAddGame}
             onCancel={() => (editingGame ? setEditingGame(null) : setAddingGame(false))}

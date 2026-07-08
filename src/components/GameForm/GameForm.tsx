@@ -46,7 +46,6 @@ interface GameFormProps {
   onSubmit: (values: GameFormValues) => void
   onCancel: () => void
   onCreateCategory?: (name: string) => Promise<Category>
-  submitting?: boolean
 }
 
 export function GameForm({
@@ -55,7 +54,6 @@ export function GameForm({
   onSubmit,
   onCancel,
   onCreateCategory,
-  submitting,
 }: GameFormProps) {
   const { token } = useAuth()
   const [title, setTitle] = useState(initial?.title ?? '')
@@ -304,10 +302,10 @@ export function GameForm({
         </button>
         <button
           type="submit"
-          disabled={submitting || uploading || !title.trim()}
+          disabled={uploading || !title.trim()}
           className="rounded bg-slate-800 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-50"
         >
-          {submitting ? 'Saving…' : 'Save game'}
+          Save game
         </button>
       </div>
     </form>

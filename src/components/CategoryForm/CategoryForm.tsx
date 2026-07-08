@@ -5,10 +5,9 @@ interface CategoryFormProps {
   initial?: Category
   onSubmit: (name: string) => void
   onCancel: () => void
-  submitting?: boolean
 }
 
-export function CategoryForm({ initial, onSubmit, onCancel, submitting }: CategoryFormProps) {
+export function CategoryForm({ initial, onSubmit, onCancel }: CategoryFormProps) {
   const [name, setName] = useState(initial?.name ?? '')
 
   const handleSubmit = (e: FormEvent) => {
@@ -28,7 +27,7 @@ export function CategoryForm({ initial, onSubmit, onCancel, submitting }: Catego
       />
       <button
         type="submit"
-        disabled={submitting || !name.trim()}
+        disabled={!name.trim()}
         className="rounded bg-slate-800 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-50"
       >
         Save
