@@ -35,10 +35,10 @@
       "username": "Raz.D",
       "displayName": "Raz",
       "isOwner": false,
-      "mustChangePin": true,
-      "salt": "WNqZXswo6dV5OL9zbYDAaA==",
-      "iv": "pXAvinCcpSLeuOWT",
-      "ciphertext": "IBCOsO4TRsf2wjcwERFN9pUS6mAnn4KKpgX2uBQtG/W3OsDWPrJk1/+8BSpACQYJbrCn0xXy1DTIIAyWzLtzWgV4c3ScKpbgNcqSpTTVAYpvuDEuuLo9jWtgd6daa4CpJPC95Q/3Hy10jFuKXw=="
+      "mustChangePin": false,
+      "salt": "Lx+/dFYji2A7M5ZAkRhe8g==",
+      "iv": "ewhqPGkBwnh9DwhI",
+      "ciphertext": "b5fdyTBiY569twJyPpTEj1+87Bf31JfjhwUFUQAVcKBBXueVzvFxvUwPDUOxFsygBbZFPdi4KfQ8dnHxMfpfOOtxhVZWyiwZ8hBTgALCqS5252bSk27EfKfskuk1KzIfMMPUwtgPTo0fXcsivQ=="
     },
     {
       "id": "68e3f815-078d-4230-8453-7c5c6686620a",
