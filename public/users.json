@@ -45,10 +45,10 @@
       "username": "Kosta.test",
       "displayName": "Kosta.test",
       "isOwner": false,
-      "mustChangePin": true,
-      "salt": "Scl+uTRq5jW+juR9PKeT0w==",
-      "iv": "rBrXnKr/kt1CVNey",
-      "ciphertext": "g6yd/Br7rgYsYcKzoc/5/9jcxhBflZWwvefKCUy4/scQ+n3Xn1X/bEncrbTuwvWlo0vSDpRSMs4M3ZdGAGA/nixgCOtAW/wVakW281S4f/NwTw346dA9TxXtPz6kU7lupL7o+1gsSEp+nFWKTA=="
+      "mustChangePin": false,
+      "salt": "eYCvcyTQQ3t3xB7OUh563Q==",
+      "iv": "nJ+36oG+Vlss1BhF",
+      "ciphertext": "+uiyOkf8zSh3S/2B7vS88SPuUdzykvmT7c0huuS+AM2aR3+e7pVXAzIJzVCe+Nky1SC3oTrrj2wqt+2CYM1VNcb/1MKtj/ju6uxftRVaH2OKMW65zFPVGphsudWb4trxyFU2+/b8CSzbgO4WoQ=="
     }
   ]
 }
