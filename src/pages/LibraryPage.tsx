@@ -83,6 +83,7 @@ export function LibraryPage() {
       id: crypto.randomUUID(),
       ...values,
       createdBy: currentUser?.displayName ?? 'unknown',
+      createdByUserId: currentUser?.id,
       createdAt: nowIso(),
       updatedAt: nowIso(),
     }

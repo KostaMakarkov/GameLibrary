@@ -33,6 +33,9 @@ export function Header() {
           <span className="hidden sm:inline">Game Library</span>
         </Link>
         <nav className="flex items-center gap-3 text-sm sm:gap-4">
+          <Link to="/people" className="hover:underline">
+            People
+          </Link>
           {isOwner && (
             <Link to="/users" className="hover:underline">
               Users
@@ -54,9 +57,12 @@ export function Header() {
             <span className="text-slate-400">Checking…</span>
           ) : currentUser ? (
             <div className="flex items-center gap-1.5">
-              <span className="hidden text-slate-500 sm:inline dark:text-slate-400">
+              <Link
+                to={`/u/${currentUser.id}`}
+                className="hidden text-slate-500 hover:underline sm:inline dark:text-slate-400"
+              >
                 {currentUser.displayName}
-              </span>
+              </Link>
               <button
                 onClick={logout}
                 aria-label="Log out"

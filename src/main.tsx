@@ -6,6 +6,7 @@ import App from './App.tsx'
 import { UsersProvider } from './context/UsersContext'
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
+import { UserListsProvider } from './context/UserListsContext'
 import { EditModeProvider } from './context/EditModeContext'
 import { ToastProvider } from './context/ToastContext'
 
@@ -16,9 +17,11 @@ createRoot(document.getElementById('root')!).render(
         <UsersProvider>
           <AuthProvider>
             <DataProvider>
-              <EditModeProvider>
-                <App />
-              </EditModeProvider>
+              <UserListsProvider>
+                <EditModeProvider>
+                  <App />
+                </EditModeProvider>
+              </UserListsProvider>
             </DataProvider>
           </AuthProvider>
         </UsersProvider>

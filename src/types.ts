@@ -15,6 +15,7 @@ export interface Game {
   tags: string[]
   platform: string
   createdBy: string
+  createdByUserId?: string
   createdAt: string
   updatedAt: string
 }
@@ -39,4 +40,17 @@ export interface StoredUser {
 
 export interface UsersDb {
   users: StoredUser[]
+}
+
+// A personal list is a user's own way of organizing any game in the library
+// (e.g. "Games to play") - independent of the shared admin-managed categories.
+export interface PersonalList {
+  id: string
+  ownerId: string
+  name: string
+  gameIds: string[]
+}
+
+export interface UserListsDb {
+  lists: PersonalList[]
 }

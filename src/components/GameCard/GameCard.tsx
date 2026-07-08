@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router'
 import { getImageUrl } from '../../lib/db'
 import { StarRating } from '../StarRating'
 import { RecommendedBadge } from '../RecommendedBadge'
+import { ListPicker } from '../ListPicker'
 import type { Game } from '../../types'
 
 interface GameCardProps {
@@ -56,10 +58,22 @@ export function GameCard({ game, categoryName, actions }: GameCardProps) {
         )}
         <div className="flex items-center justify-between pt-1">
           <StarRating value={game.rating} />
-          {actions}
+          <div className="flex items-center gap-1">
+            <ListPicker gameId={game.id} />
+            {actions}
+          </div>
         </div>
         {game.createdBy && (
-          <p className="text-xs text-slate-400">Added by {game.createdBy}</p>
+          <p className="text-xs text-slate-400">
+            Added by{' '}
+            {game.createdByUserId ? (
+              <Link to={`/u/${game.createdByUserId}`} className="underline">
+                {game.createdBy}
+              </Link>
+            ) : (
+              game.createdBy
+            )}
+          </p>
         )}
       </div>
     </div>
